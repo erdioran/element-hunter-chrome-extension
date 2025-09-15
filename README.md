@@ -1,22 +1,39 @@
 # Element Hunter Chrome Extension
 
-Element Hunter is a powerful Chrome extension designed to help Selenium automation testers capture web elements dynamically. Click on any element on a webpage, and the extension will automatically extract its selector information with intelligent prioritization and uniqueness validation.
+![Element Hunter Logo](icons/icon-128.png)
 
-## 🚀 Features
+A powerful Chrome extension for automatically capturing web element information for Selenium automation testing. Element Hunter intelligently identifies and extracts element selectors, making it easy to create robust automation scripts.
 
-### Core Functionality
-- **Smart Element Capture**: Automatically captures clicked elements with visual feedback
-- **Intelligent Selector Priority**: ID → className → cssSelector → XPath with uniqueness validation
-- **Dual Capture Modes**: "Capture Only" or "Capture & Click" modes
-- **Persistent Storage**: Elements persist across page reloads and navigation
-- **Real-time Element Counting**: Shows how many elements match each selector type
+## ✨ Features
 
-### Advanced Features
-- **Automatic Element Naming**: Generates meaningful names based on content and attributes
-- **Multiple JSON Export Formats**: Standard format and Selenium Automation format
-- **Uniqueness Validation**: Automatically selects the most unique selector for Selenium
-- **Visual Overlay**: Shows capture status and element count on page
-- **Cross-page Persistence**: Maintains captured elements across different pages
+### 🎯 Core Functionality
+- **Smart Element Detection**: Automatically captures clicked elements with intelligent selector priority
+- **Multiple Selector Types**: Supports ID, name, className, CSS selectors, and XPath
+- **Visual Feedback**: Real-time hover effects and click confirmations
+- **Dual Export Formats**: Standard JSON and Selenium automation-ready JSON export
+- **Element Naming**: Automatic element naming based on content and attributes
+- **Persistent Storage**: Elements are saved across browser sessions
+
+### 🌐 Multilingual Support
+- **Language Switching**: Toggle between English and Turkish
+- **Dynamic UI**: All interface elements update instantly
+- **Persistent Preference**: Language choice saved automatically
+
+### 🎨 Modern UI/UX
+- **Compact Design**: 320px width popup with optimized layout
+- **Professional Theme**: Pastel color scheme with gradient buttons
+- **Responsive Controls**: Hover effects and smooth animations
+- **Settings Modal**: Clean modal interface for configuration
+- **Recent Elements**: Shows last 5 captured elements with best selectors
+
+### 🔧 Advanced Features
+- **Capture Modes**: 
+  - Capture Only: Just collect element data
+  - Capture and Click: Collect data and trigger element clicks
+- **Smart Selector Priority**: ID → name → className → CSS → XPath
+- **Element Statistics**: Real-time count of captured elements
+- **Clean Element List**: Simplified display showing element name and best selector
+
 
 ## 📦 Installation
 
@@ -28,18 +45,37 @@ Element Hunter is a powerful Chrome extension designed to help Selenium automati
 
 ## 🎯 Usage
 
-### Basic Usage
-1. **Start Capturing**: Click the Element Hunter icon and press "Start Capturing"
-2. **Choose Mode**: Toggle between "Capture Only" and "Capture & Click" modes
-3. **Capture Elements**: Click on elements you want to capture on any webpage
-4. **View Results**: Open popup to see captured elements with count information
-5. **Export Data**: Choose between two JSON export formats
+### Basic Operation
+1. **Activate Extension**: Click the Element Hunter icon in Chrome toolbar
+2. **Language Selection**: Click ⚙️ (settings) to choose English or Turkish
+3. **Start Hunting**: Click "Start" button in the popup
+4. **Capture Elements**: Click on any element on the webpage
+5. **View Results**: See last 5 captured elements with their best selectors
+6. **Export Data**: Use "Download JSON" or "Selenium Automation Format" buttons
+
+### Interface Overview
+- **Header**: Logo + Element Hunter title + Settings (⚙️)
+- **Status**: Shows current state (Inactive/Active)
+- **Controls**: Start/Stop + Mode + Clear buttons
+- **Downloads**: JSON Export + Selenium Format buttons
+- **Statistics**: Real-time element count
+- **Recent Elements**: Last 5 captures with optimal selectors
 
 ### Capture Modes
-- **Capture Only**: Intercepts clicks to capture element data without triggering page actions
-- **Capture & Click**: Captures element data and allows normal click behavior
+- **Mode: Capture Only**: Elements are captured but not clicked (default)
+- **Mode: Capture and Click**: Elements are captured AND their click event is triggered
 
-## 📊 JSON Export Formats
+### Language Support
+- **English**: Full interface in English
+- **Turkish**: Complete Turkish translation
+- **Auto-save**: Language preference persists across sessions
+
+### Element Information Captured
+- Element name (auto-generated based on content/attributes)
+- Best selector (ID → name → className → CSS → XPath priority)
+- Tag name and text content
+- All available selectors with uniqueness validation
+- Element attributes and counts
 
 ### Standard Format
 ```json
@@ -174,9 +210,10 @@ for (String elementName : elements.keySet()) {
 
 ### Selector Priority Algorithm
 1. **ID**: Highest priority if unique (count = 1)
-2. **className**: Second priority if unique
-3. **cssSelector**: Third priority if unique
-4. **XPath**: Fallback option
+2. **name**: Second priority if unique
+3. **className**: Third priority if unique
+4. **cssSelector**: Fourth priority if unique
+5. **XPath**: Fallback option
 
 ### Storage Strategy
 - Elements persist for 1 hour across page reloads
@@ -197,7 +234,64 @@ This project is open source and available under the MIT License.
 
 ## 🔄 Version History
 
-- **v1.0**: Initial release with basic element capture
-- **v1.1**: Added dual capture modes and persistence
-- **v1.2**: Implemented element counting and uniqueness validation
-- **v1.3**: Added Selenium Automation format and improved JSON structure
+### v2.0.0 (Current)
+- **Major UI/UX Redesign**: Modern pastel theme with 320px compact popup
+- **Multilingual Support**: English/Turkish language switching with persistence
+- **Enhanced Button System**: Gradient colors, proper sizing, and hover effects
+- **Settings Modal**: Clean modal interface for configuration and about info
+- **Improved Element Display**: Shows last 5 elements with best selectors only
+- **Logo Integration**: Custom 40px logo in header and extension icons
+- **Fixed Layout Issues**: Consistent button sizing and responsive design
+- **Optimized Controls**: Start/Stop, Mode (2-line), Clear buttons with flex layout
+
+### v1.0.0
+- Initial release
+- Smart element detection and capture
+- JSON export functionality
+- Visual feedback system
+- Persistent storage
+- Basic popup interface
+
+## 🎨 UI Screenshots
+
+### Main Interface
+- **Compact Design**: 320px width with optimized spacing
+- **Professional Theme**: Gradient buttons with pastel colors
+- **Smart Layout**: Logo + title + settings in header
+- **Responsive Controls**: Equal-width buttons with proper alignment
+
+### Settings Modal
+- **About Developer**: Contact information and links
+- **Language Selection**: English/Turkish toggle buttons
+- **Clean Design**: Modal overlay with rounded corners
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly in Chrome extension environment
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👨‍💻 Author
+
+**Erdi Oran**
+- Email: erdioran@gmail.com
+- GitHub: [erdioran](https://github.com/erdioran)
+
+## 🐛 Bug Reports & Feature Requests
+
+Please use the GitHub Issues page to report bugs or request new features.
+
+## 🚀 Recent Updates
+
+- ✅ Complete UI overhaul with modern design
+- ✅ Multilingual support (EN/TR)
+- ✅ Enhanced element capture display
+- ✅ Fixed button sizing and layout issues
+- ✅ Added settings modal with configuration options
+- ✅ Improved user experience with better visual feedback
