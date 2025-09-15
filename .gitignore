@@ -1,0 +1,19 @@
+# Chrome Extension
+*.crx
+*.pem
+key.pem
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

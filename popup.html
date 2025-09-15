@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.active {
+            background-color: #e8f5e8;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        
+        .status.inactive {
+            background-color: #ffeaa7;
+            color: #e17055;
+            border: 1px solid #e17055;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .toggle-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .toggle-btn.stop {
+            background-color: #f44336;
+        }
+        
+        .toggle-btn.stop:hover {
+            background-color: #da190b;
+        }
+        
+        .clear-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background-color: #e68900;
+        }
+        
+        .download-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .download-btn:hover {
+            background-color: #1976D2;
+        }
+        
+        .mode-btn {
+            background-color: #9C27B0;
+            color: white;
+        }
+        
+        .mode-btn:hover {
+            background-color: #7B1FA2;
+        }
+        
+        .selenium-btn {
+            background-color: #FF5722;
+            color: white;
+        }
+        
+        .selenium-btn:hover {
+            background-color: #E64A19;
+        }
+        
+        .stats {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .stats h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .element-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+        }
+        
+        .element-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+        
+        .element-item:last-child {
+            border-bottom: none;
+        }
+        
+        .element-name {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .element-selector {
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .element-text {
+            color: #999;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        
+        .instructions {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #1976d2;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Element Hunter</h1>
+    </div>
+    
+    <div id="status" class="status inactive">
+        ⏹️ Pasif - Başlatmak için tıklayın
+    </div>
+    
+    <div class="controls">
+        <button id="toggleBtn" class="toggle-btn">Başlat</button>
+        <button id="clearBtn" class="clear-btn">Temizle</button>
+    </div>
+    
+    <div class="controls">
+        <button id="modeBtn" class="mode-btn">Mod: Sadece Yakala</button>
+    </div>
+    
+    <div class="controls">
+        <button id="downloadBtn" class="download-btn">JSON İndir</button>
+    </div>
+    
+    <div class="controls">
+        <button id="seleniumBtn" class="selenium-btn">Selenium Otomasyonu Formatı</button>
+    </div>
+    
+    <div class="stats">
+        <h3>📊 İstatistikler</h3>
+        <div>Toplanan Element: <span id="elementCount">0</span></div>
+    </div>
+    
+    <div class="element-list" id="elementList">
+        <div style="text-align: center; color: #999; padding: 20px;">
+            Henüz element yakalanmadı
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <strong>Kullanım:</strong><br>
+        1. "Başlat" butonuna tıklayın<br>
+        2. Web sayfasında elementlere tıklayın<br>
+        3. "JSON İndir" ile sonuçları alın
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
