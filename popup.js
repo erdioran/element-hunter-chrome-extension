@@ -26,9 +26,30 @@ class PopupController {
             this.downloadSeleniumFormat();
         });
 
-        // Feedback functionality
-        document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
-            this.sendFeedback();
+        // Settings modal functionality
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('settingsModal').style.display = 'block';
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('settingsModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Language functionality
+        document.getElementById('langEnBtn').addEventListener('click', () => {
+            this.setLanguage('en');
+        });
+        
+        document.getElementById('langTrBtn').addEventListener('click', () => {
+            this.setLanguage('tr');
         });
         this.modeBtn.addEventListener('click', () => this.toggleMode());
 
@@ -264,57 +285,131 @@ class PopupController {
         URL.revokeObjectURL(url);
     }
 
-    sendFeedback() {
-        const feedbackText = document.getElementById('feedbackText').value.trim();
+    setLanguage(lang) {
+        // Save language preference
+        chrome.storage.local.set({ language: lang });
         
-        if (!feedbackText) {
-            alert('Please enter your feedback before sending.');
-            return;
-        }
+        // Update UI language
+        this.updateLanguage(lang);
+        
+        // Update active button
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(lang === 'en' ? 'langEnBtn' : 'langTrBtn').classList.add('active');
+    }
 
-        // Create mailto link with feedback
-        const subject = encodeURIComponent('Element Hunter Extension Feedback');
-        const body = encodeURIComponent(`Feedback from Element Hunter Extension:\n\n${feedbackText}\n\n---\nExtension Version: 1.0\nBrowser: ${navigator.userAgent}`);
-        const mailtoLink = `mailto:erdioran@gmail.com?subject=${subject}&body=${body}`;
+    updateLanguage(lang) {
+        const translations = {
+            en: {
+                title: 'Element Hunter',
+                status_inactive: '⏹️ Inactive - Click to start',
+                status_active: '🎯 Active - Click elements to capture',
+                start: 'Start',
+                stop: 'Stop',
+                clear: 'Clear',
+                mode_capture: 'Mode:<br>Capture Only',
+                mode_highlight: 'Mode:<br>Capture and Click',
+                download_json: 'Download JSON',
+                selenium_format: 'Selenium Automation Format',
+                statistics: '📊 Statistics: Collected Elements',
+                recent_elements: '📋 Recent Captured Elements',
+                no_elements: 'No elements captured yet',
+                instructions: '💡 Click on webpage elements to capture them. Captured elements are automatically saved in JSON format.',
+                about_developer: 'About Developer'
+            },
+            tr: {
+                title: 'Element Hunter',
+                status_inactive: '⏹️ Pasif - Başlatmak için tıklayın',
+                status_active: '🎯 Aktif - Elementleri yakalamak için tıklayın',
+                start: 'Başlat',
+                stop: 'Durdur',
+                clear: 'Temizle',
+                mode_capture: 'Mod:<br>Sadece Yakala',
+                mode_highlight: 'Mod:<br>Yakala ve Tıkla',
+                download_json: 'JSON İndir',
+                selenium_format: 'Selenium Otomasyonu Formatı',
+                statistics: '📊 İstatistikler: Toplanan Element',
+                recent_elements: '📋 Son Toplanan Elementler',
+                no_elements: 'Henüz element yakalanmadı',
+                instructions: '💡 Web sayfasındaki elementleri yakalamak için tıklayın. Yakalanan elementler otomatik olarak JSON formatında kaydedilir.',
+                about_developer: 'Geliştirici Hakkında'
+            }
+        };
+
+        const t = translations[lang];
         
-        // Open email client
-        window.open(mailtoLink);
+        // Update all text elements
+        document.querySelector('h1').textContent = t.title;
         
-        // Clear textarea and show confirmation
-        document.getElementById('feedbackText').value = '';
+        // Update toggle button with proper styling
+        const toggleBtn = document.getElementById('toggleBtn');
+        toggleBtn.textContent = this.isActive ? t.stop : t.start;
+        if (this.isActive) {
+            toggleBtn.classList.add('stop');
+        } else {
+            toggleBtn.classList.remove('stop');
+        }
         
-        // Show temporary success message
-        const btn = document.getElementById('sendFeedbackBtn');
-        const originalText = btn.textContent;
-        btn.textContent = '✓ Sent!';
-        btn.style.background = '#10b981';
+        document.getElementById('clearBtn').textContent = t.clear;
+        document.getElementById('modeBtn').innerHTML = this.captureAndClick ? t.mode_highlight : t.mode_capture;
+        document.getElementById('downloadBtn').textContent = t.download_json;
+        document.getElementById('seleniumBtn').textContent = t.selenium_format;
+        document.querySelector('.stats').innerHTML = `${t.statistics} <span id="elementCount">${this.elements.length}</span>`;
+        document.querySelector('.elements-section h3').textContent = t.recent_elements;
+        document.querySelector('.instructions').textContent = t.instructions;
+        document.querySelector('.about-section h3').textContent = t.about_developer;
         
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.background = '#f59e0b';
-        }, 2000);
+        // Update status
+        if (!this.isActive) {
+            this.statusDiv.innerHTML = t.status_inactive;
+        } else {
+            this.statusDiv.innerHTML = t.status_active;
+        }
+        
+        // Update empty state
+        if (this.elements.length === 0) {
+            const elementsList = document.getElementById('elementsList');
+            if (elementsList) {
+                elementsList.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 16px; font-size: 12px;">
+                        ${t.no_elements}
+                    </div>
+                `;
+            }
+        }
     }
 
     updateUI() {
-        // Status güncelle
+        // Load saved language preference
+        chrome.storage.local.get(['language'], (result) => {
+            const lang = result.language || 'en';
+            this.updateLanguage(lang);
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(lang === 'en' ? 'langEnBtn' : 'langTrBtn').classList.add('active');
+        });
+
+        // Update status and buttons based on current state
         if (this.isActive) {
-            this.statusDiv.className = 'status status-active';
-            this.statusDiv.innerHTML = '🎯 Active - Click on elements';
-            this.toggleBtn.textContent = 'Stop';
-            this.toggleBtn.className = 'btn btn-secondary';
+            this.statusDiv.className = 'status active';
         } else {
-            this.statusDiv.className = 'status status-inactive';
-            this.statusDiv.innerHTML = '⏹️ Inactive - Click to start';
-            this.toggleBtn.textContent = 'Start';
-            this.toggleBtn.className = 'btn btn-primary';
+            this.statusDiv.className = 'status inactive';
         }
 
-        // Element sayısını güncelle
+        // Update toggle button styling immediately
+        const toggleBtn = document.getElementById('toggleBtn');
+        if (this.isActive) {
+            toggleBtn.classList.add('stop');
+        } else {
+            toggleBtn.classList.remove('stop');
+        }
+
+        // Update element count
         if (this.elementCount) {
             this.elementCount.textContent = this.elements.length;
         }
 
-        // Element listesini güncelle
+        // Update element list
         this.updateElementList();
     }
 
@@ -331,29 +426,28 @@ class PopupController {
             return;
         }
 
-        elementsList.innerHTML = this.elements.map(element => {
-            const counts = element.counts || {};
-            let countsText = '';
-            
-            // Counts bilgisini oluştur
-            const countEntries = [];
-            if (counts.id) countEntries.push(`ID: ${counts.id}`);
-            if (counts.className) countEntries.push(`Class: ${counts.className}`);
-            if (counts.cssSelector) countEntries.push(`CSS: ${counts.cssSelector}`);
-            if (counts.xpath) countEntries.push(`XPath: ${counts.xpath}`);
-            
-            if (countEntries.length > 0) {
-                countsText = `<div class="element-details" style="margin-top: 4px;">Counts: ${countEntries.join(', ')}</div>`;
+        // Son 5 elementi göster
+        const recentElements = this.elements.slice(-5).reverse();
+        
+        elementsList.innerHTML = recentElements.map(element => {
+            // En uygun selector'ı belirle
+            let bestSelector = '';
+            if (element.attributes?.id) {
+                bestSelector = `id: #${element.attributes.id}`;
+            } else if (element.attributes?.name) {
+                bestSelector = `name: ${element.attributes.name}`;
+            } else if (element.attributes?.class) {
+                bestSelector = `class: .${element.attributes.class.split(' ')[0]}`;
+            } else if (element.selector && !element.selector.startsWith('/')) {
+                bestSelector = `css: ${element.selector}`;
+            } else {
+                bestSelector = `xpath: ${element.xpath}`;
             }
             
             return `
                 <div class="element-item">
                     <div class="element-name">${element.name}</div>
-                    <div class="element-details">
-                        <strong>${element.selectorType}:</strong> ${element.selector}
-                    </div>
-                    ${element.text ? `<div class="element-details" style="font-style: italic;">"${element.text}"</div>` : ''}
-                    ${countsText}
+                    <div class="element-selector">${bestSelector}</div>
                 </div>
             `;
         }).join('');
