@@ -22,7 +22,14 @@ class PopupController {
         this.toggleBtn.addEventListener('click', () => this.toggleHunting());
         this.clearBtn.addEventListener('click', () => this.clearElements());
         this.downloadBtn.addEventListener('click', () => this.downloadJSON());
-        this.seleniumBtn.addEventListener('click', () => this.downloadSeleniumFormat());
+        document.getElementById('seleniumBtn').addEventListener('click', () => {
+            this.downloadSeleniumFormat();
+        });
+
+        // Feedback functionality
+        document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
+            this.sendFeedback();
+        });
         this.modeBtn.addEventListener('click', () => this.toggleMode());
 
         // Başlangıç durumunu yükle
@@ -197,11 +204,6 @@ class PopupController {
     }
 
     downloadSeleniumFormat() {
-        if (this.elements.length === 0) {
-            alert('İndirilecek element yok!');
-            return;
-        }
-
         // Selenium Otomasyonu formatı
         const seleniumAutomationFormat = {};
         
@@ -237,8 +239,18 @@ class PopupController {
             };
         });
 
+        const seleniumFormat = {
+            metadata: {
+                generatedAt: new Date().toISOString(),
+                url: window.location?.href || 'unknown',
+                totalElements: this.elements.length,
+                tool: 'Element Hunter v1.0'
+            },
+            elements: seleniumAutomationFormat
+        };
+
         // JSON dosyasını indir
-        const blob = new Blob([JSON.stringify(seleniumAutomationFormat, null, 2)], {
+        const blob = new Blob([JSON.stringify(seleniumFormat, null, 2)], {
             type: 'application/json'
         });
         
@@ -252,41 +264,74 @@ class PopupController {
         URL.revokeObjectURL(url);
     }
 
+    sendFeedback() {
+        const feedbackText = document.getElementById('feedbackText').value.trim();
+        
+        if (!feedbackText) {
+            alert('Please enter your feedback before sending.');
+            return;
+        }
+
+        // Create mailto link with feedback
+        const subject = encodeURIComponent('Element Hunter Extension Feedback');
+        const body = encodeURIComponent(`Feedback from Element Hunter Extension:\n\n${feedbackText}\n\n---\nExtension Version: 1.0\nBrowser: ${navigator.userAgent}`);
+        const mailtoLink = `mailto:erdioran@gmail.com?subject=${subject}&body=${body}`;
+        
+        // Open email client
+        window.open(mailtoLink);
+        
+        // Clear textarea and show confirmation
+        document.getElementById('feedbackText').value = '';
+        
+        // Show temporary success message
+        const btn = document.getElementById('sendFeedbackBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Sent!';
+        btn.style.background = '#10b981';
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '#f59e0b';
+        }, 2000);
+    }
+
     updateUI() {
         // Status güncelle
         if (this.isActive) {
-            this.statusDiv.className = 'status active';
-            this.statusDiv.innerHTML = '🎯 Aktif - Elementlere tıklayın';
-            this.toggleBtn.textContent = 'Durdur';
-            this.toggleBtn.className = 'toggle-btn stop';
+            this.statusDiv.className = 'status status-active';
+            this.statusDiv.innerHTML = '🎯 Active - Click on elements';
+            this.toggleBtn.textContent = 'Stop';
+            this.toggleBtn.className = 'btn btn-secondary';
         } else {
-            this.statusDiv.className = 'status inactive';
-            this.statusDiv.innerHTML = '⏹️ Pasif - Başlatmak için tıklayın';
-            this.toggleBtn.textContent = 'Başlat';
-            this.toggleBtn.className = 'toggle-btn';
+            this.statusDiv.className = 'status status-inactive';
+            this.statusDiv.innerHTML = '⏹️ Inactive - Click to start';
+            this.toggleBtn.textContent = 'Start';
+            this.toggleBtn.className = 'btn btn-primary';
         }
 
-        // Mod butonunu güncelle
-        this.modeBtn.textContent = this.captureAndClick ? 'Mod: Yakala & Tıkla' : 'Mod: Sadece Yakala';
-
         // Element sayısını güncelle
-        this.elementCount.textContent = this.elements.length;
+        if (this.elementCount) {
+            this.elementCount.textContent = this.elements.length;
+        }
 
         // Element listesini güncelle
         this.updateElementList();
     }
 
     updateElementList() {
+        const elementsList = document.getElementById('elementsList');
+        if (!elementsList) return;
+
         if (this.elements.length === 0) {
-            this.elementList.innerHTML = `
-                <div style="text-align: center; color: #999; padding: 20px;">
-                    Henüz element yakalanmadı
+            elementsList.innerHTML = `
+                <div style="text-align: center; color: #64748b; padding: 16px; font-size: 12px;">
+                    No elements captured yet
                 </div>
             `;
             return;
         }
 
-        this.elementList.innerHTML = this.elements.map(element => {
+        elementsList.innerHTML = this.elements.map(element => {
             const counts = element.counts || {};
             let countsText = '';
             
@@ -298,16 +343,16 @@ class PopupController {
             if (counts.xpath) countEntries.push(`XPath: ${counts.xpath}`);
             
             if (countEntries.length > 0) {
-                countsText = `<div class="element-counts" style="font-size: 11px; color: #666; margin-top: 2px;">Adetler: ${countEntries.join(', ')}</div>`;
+                countsText = `<div class="element-details" style="margin-top: 4px;">Counts: ${countEntries.join(', ')}</div>`;
             }
             
             return `
                 <div class="element-item">
                     <div class="element-name">${element.name}</div>
-                    <div class="element-selector">
+                    <div class="element-details">
                         <strong>${element.selectorType}:</strong> ${element.selector}
                     </div>
-                    ${element.text ? `<div class="element-text">"${element.text}"</div>` : ''}
+                    ${element.text ? `<div class="element-details" style="font-style: italic;">"${element.text}"</div>` : ''}
                     ${countsText}
                 </div>
             `;
@@ -315,7 +360,7 @@ class PopupController {
     }
 
     showError(message) {
-        this.statusDiv.className = 'status inactive';
+        this.statusDiv.className = 'status status-inactive';
         this.statusDiv.innerHTML = `❌ ${message}`;
     }
 }

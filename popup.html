@@ -4,110 +4,130 @@
     <meta charset="utf-8">
     <style>
         body {
-            width: 350px;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+            width: 320px;
+            padding: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
         }
-        
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 8px;
+            display: block;
+        }
+
         .header h1 {
             margin: 0;
-            color: #4CAF50;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
             font-size: 18px;
         }
         
         .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
             text-align: center;
-            font-weight: bold;
         }
-        
-        .status.active {
-            background-color: #e8f5e8;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
+
+        .status-active {
+            background: #f0fdf4;
+            border-color: #10b981;
+            color: #065f46;
         }
-        
-        .status.inactive {
-            background-color: #ffeaa7;
-            color: #e17055;
-            border: 1px solid #e17055;
+
+        .status-inactive {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
         }
         
         .controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
-        
-        button {
+
+        .btn {
             flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+            min-width: 90px;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            background: white;
         }
-        
-        .toggle-btn {
-            background-color: #4CAF50;
+
+        .btn-primary {
+            background: #10b981;
             color: white;
+            border-color: #10b981;
         }
-        
-        .toggle-btn:hover {
-            background-color: #45a049;
+
+        .btn-primary:hover {
+            background: #059669;
+            border-color: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         }
-        
-        .toggle-btn.stop {
-            background-color: #f44336;
-        }
-        
-        .toggle-btn.stop:hover {
-            background-color: #da190b;
-        }
-        
-        .clear-btn {
-            background-color: #ff9800;
+
+        .btn-secondary {
+            background: #ef4444;
             color: white;
+            border-color: #ef4444;
         }
-        
-        .clear-btn:hover {
-            background-color: #e68900;
+
+        .btn-secondary:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
         }
-        
-        .download-btn {
-            background-color: #2196F3;
+
+        .btn-download {
+            background: #3b82f6;
             color: white;
+            border-color: #3b82f6;
         }
-        
-        .download-btn:hover {
-            background-color: #1976D2;
+
+        .btn-download:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
         }
-        
-        .mode-btn {
-            background-color: #9C27B0;
+
+        .btn-selenium {
+            background: #8b5cf6;
             color: white;
+            border-color: #8b5cf6;
         }
-        
-        .mode-btn:hover {
-            background-color: #7B1FA2;
-        }
-        
-        .selenium-btn {
-            background-color: #FF5722;
-            color: white;
-        }
-        
-        .selenium-btn:hover {
-            background-color: #E64A19;
+
+        .btn-selenium:hover {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
         }
         
         .stats {
@@ -122,33 +142,49 @@
             color: #333;
         }
         
-        .element-list {
-            max-height: 200px;
+        .elements-list {
+            max-height: 180px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            background-color: white;
-        }
-        
-        .element-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             padding: 8px;
-            border-bottom: 1px solid #eee;
+        }
+
+        .mode-toggle {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mode-toggle label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .element-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 6px;
             font-size: 12px;
         }
-        
-        .element-item:last-child {
-            border-bottom: none;
-        }
-        
+
         .element-name {
-            font-weight: bold;
-            color: #4CAF50;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
         }
-        
-        .element-selector {
-            color: #666;
-            margin-top: 2px;
+
+        .element-details {
+            color: #64748b;
+            font-size: 11px;
         }
         
         .element-text {
@@ -157,19 +193,75 @@
             margin-top: 2px;
         }
         
-        .instructions {
-            background-color: #e3f2fd;
-            padding: 10px;
-            border-radius: 5px;
+        .about-section, .feedback-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .about-section h3, .feedback-section h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .developer-info p {
+            margin: 4px 0;
             font-size: 12px;
-            color: #1976d2;
-            margin-top: 15px;
+            color: #475569;
+        }
+
+        .developer-info a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .developer-info a:hover {
+            text-decoration: underline;
+        }
+
+        #feedbackText {
+            width: 100%;
+            height: 60px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 12px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 8px;
+        }
+
+        .btn-feedback {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+            width: 100%;
+        }
+
+        .btn-feedback:hover {
+            background: #d97706;
+            border-color: #d97706;
+        }
+
+        .instructions {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #0369a1;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🎯 Element Hunter</h1>
+        <img src="icons/icon-32.png" alt="Element Hunter" class="logo">
+        <h1>Element Hunter</h1>
     </div>
     
     <div id="status" class="status inactive">
@@ -200,17 +292,19 @@
     
     <div class="element-list" id="elementList">
         <div style="text-align: center; color: #999; padding: 20px;">
-            Henüz element yakalanmadı
         </div>
+    </div>
+
+    <div class="feedback-section">
+        <h3>Send Feedback</h3>
+        <textarea id="feedbackText" placeholder="Share your suggestions, bug reports, or feature requests..."></textarea>
+        <button id="sendFeedbackBtn" class="btn btn-feedback">Send Feedback</button>
     </div>
     
     <div class="instructions">
-        <strong>Kullanım:</strong><br>
-        1. "Başlat" butonuna tıklayın<br>
-        2. Web sayfasında elementlere tıklayın<br>
-        3. "JSON İndir" ile sonuçları alın
+        💡 Click on webpage elements to capture them. Captured elements are automatically saved in JSON format.
     </div>
-    
+
     <script src="popup.js"></script>
 </body>
 </html>
