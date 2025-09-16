@@ -4,6 +4,8 @@
 
 A powerful Chrome extension for automatically capturing web element information for Selenium automation testing. Element Hunter intelligently identifies and extracts element selectors, making it easy to create robust automation scripts.
 
+![Element Hunter Demo](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDEwY3J0OGJlcXNkZzU1N2t1Y2Q3a2k5a2VnOGs4cmp1ZHJiNWt3YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lpVWL3B002F9cuoOKW/giphy.gif)
+
 ## ✨ Features
 
 ### 🎯 Core Functionality
