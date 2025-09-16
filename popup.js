@@ -28,18 +28,18 @@ class PopupController {
 
         // Settings modal functionality
         document.getElementById('settingsBtn').addEventListener('click', () => {
-            document.getElementById('settingsModal').style.display = 'block';
+            this.showModal();
         });
 
         document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('settingsModal').style.display = 'none';
+            this.hideModal();
         });
 
         // Close modal when clicking outside
         window.addEventListener('click', (event) => {
             const modal = document.getElementById('settingsModal');
             if (event.target === modal) {
-                modal.style.display = 'none';
+                this.hideModal();
             }
         });
 
@@ -286,15 +286,18 @@ class PopupController {
     }
 
     setLanguage(lang) {
+        // Update active button immediately
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(lang === 'en' ? 'langEnBtn' : 'langTrBtn').classList.add('active');
+        
+        // Update modal language immediately
+        this.updateModalLanguage(lang);
+        
         // Save language preference
         chrome.storage.local.set({ language: lang });
         
         // Update UI language
         this.updateLanguage(lang);
-        
-        // Update active button
-        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(lang === 'en' ? 'langEnBtn' : 'langTrBtn').classList.add('active');
     }
 
     updateLanguage(lang) {
@@ -307,14 +310,16 @@ class PopupController {
                 stop: 'Stop',
                 clear: 'Clear',
                 mode_capture: 'Mode:<br>Capture Only',
-                mode_highlight: 'Mode:<br>Capture and Click',
+                mode_highlight: 'Mode:<br>Capture & Highlight',
                 download_json: 'Download JSON',
-                selenium_format: 'Selenium Automation Format',
+                selenium_format: 'Automation Json',
                 statistics: '📊 Statistics: Collected Elements',
                 recent_elements: '📋 Recent Captured Elements',
                 no_elements: 'No elements captured yet',
                 instructions: '💡 Click on webpage elements to capture them. Captured elements are automatically saved in JSON format.',
-                about_developer: 'About Developer'
+                about_developer: 'About Developer',
+                status_active_text: 'Active',
+                status_inactive_text: 'Inactive'
             },
             tr: {
                 title: 'Element Hunter',
@@ -326,12 +331,14 @@ class PopupController {
                 mode_capture: 'Mod:<br>Sadece Yakala',
                 mode_highlight: 'Mod:<br>Yakala ve Tıkla',
                 download_json: 'JSON İndir',
-                selenium_format: 'Selenium Otomasyonu Formatı',
+                selenium_format: 'Otomasyon Json',
                 statistics: '📊 İstatistikler: Toplanan Element',
                 recent_elements: '📋 Son Toplanan Elementler',
                 no_elements: 'Henüz element yakalanmadı',
                 instructions: '💡 Web sayfasındaki elementleri yakalamak için tıklayın. Yakalanan elementler otomatik olarak JSON formatında kaydedilir.',
-                about_developer: 'Geliştirici Hakkında'
+                about_developer: 'Geliştirici Hakkında',
+                status_active_text: 'Aktif',
+                status_inactive_text: 'Pasif'
             }
         };
 
@@ -353,8 +360,14 @@ class PopupController {
         document.getElementById('modeBtn').innerHTML = this.captureAndClick ? t.mode_highlight : t.mode_capture;
         document.getElementById('downloadBtn').textContent = t.download_json;
         document.getElementById('seleniumBtn').textContent = t.selenium_format;
-        document.querySelector('.stats').innerHTML = `${t.statistics} <span id="elementCount">${this.elements.length}</span>`;
-        document.querySelector('.elements-section h3').textContent = t.recent_elements;
+        const statsElement = document.querySelector('.stats');
+        if (statsElement) {
+            statsElement.innerHTML = `${t.statistics} <span id="elementCount">${this.elements.length}</span>`;
+        }
+        const elementsSectionH3 = document.querySelector('.elements-section h3');
+        if (elementsSectionH3) {
+            elementsSectionH3.textContent = t.recent_elements;
+        }
         document.querySelector('.instructions').textContent = t.instructions;
         document.querySelector('.about-section h3').textContent = t.about_developer;
         
@@ -376,10 +389,12 @@ class PopupController {
                 `;
             }
         }
+
+        return t;
     }
 
     updateUI() {
-        // Load saved language preference
+        // Load saved language preferences
         chrome.storage.local.get(['language'], (result) => {
             const lang = result.language || 'en';
             this.updateLanguage(lang);
@@ -390,19 +405,40 @@ class PopupController {
         });
 
         // Update status and buttons based on current state
-        if (this.isActive) {
-            this.statusDiv.className = 'status active';
-        } else {
-            this.statusDiv.className = 'status inactive';
-        }
-
-        // Update toggle button styling immediately
+        const statusText = document.getElementById('statusText');
         const toggleBtn = document.getElementById('toggleBtn');
-        if (this.isActive) {
-            toggleBtn.classList.add('stop');
-        } else {
-            toggleBtn.classList.remove('stop');
-        }
+        
+        // Get current language for status text
+        chrome.storage.local.get(['language'], (result) => {
+            const lang = result.language || 'en';
+            const translations = {
+                en: {
+                    status_active_text: 'Active',
+                    status_inactive_text: 'Inactive',
+                    start: 'Start',
+                    stop: 'Stop'
+                },
+                tr: {
+                    status_active_text: 'Aktif',
+                    status_inactive_text: 'Pasif',
+                    start: 'Başlat',
+                    stop: 'Durdur'
+                }
+            };
+            const t = translations[lang];
+            
+            if (this.isActive) {
+                statusText.textContent = t.status_active_text;
+                statusText.className = 'status-text';
+                toggleBtn.textContent = t.stop;
+                toggleBtn.className = 'btn btn-stop';
+            } else {
+                statusText.textContent = t.status_inactive_text;
+                statusText.className = 'status-text inactive';
+                toggleBtn.textContent = t.start;
+                toggleBtn.className = 'btn btn-start';
+            }
+        });
 
         // Update element count
         if (this.elementCount) {
@@ -418,48 +454,176 @@ class PopupController {
         if (!elementsList) return;
 
         if (this.elements.length === 0) {
-            elementsList.innerHTML = `
-                <div style="text-align: center; color: #64748b; padding: 16px; font-size: 12px;">
-                    No elements captured yet
-                </div>
-            `;
+            chrome.storage.local.get(['language'], (result) => {
+                const lang = result.language || 'en';
+                const noElementsText = lang === 'en' ? 'No elements captured yet' : 'Henüz element yakalanmadı';
+                elementsList.innerHTML = `
+                    <div style="text-align: center; color: #64748b; padding: 16px; font-size: 12px;">
+                        ${noElementsText}
+                    </div>
+                `;
+            });
             return;
         }
 
-        // Son 5 elementi göster
-        const recentElements = this.elements.slice(-5).reverse();
-        
-        elementsList.innerHTML = recentElements.map(element => {
-            // En uygun selector'ı belirle
-            let bestSelector = '';
-            if (element.attributes?.id) {
-                bestSelector = `id: #${element.attributes.id}`;
-            } else if (element.attributes?.name) {
-                bestSelector = `name: ${element.attributes.name}`;
-            } else if (element.attributes?.class) {
-                bestSelector = `class: .${element.attributes.class.split(' ')[0]}`;
-            } else if (element.selector && !element.selector.startsWith('/')) {
-                bestSelector = `css: ${element.selector}`;
-            } else {
-                bestSelector = `xpath: ${element.xpath}`;
-            }
+        // Show last 5 elements
+        const recentElements = this.elements.slice(-5);
+        elementsList.innerHTML = recentElements.map((element, index) => {
+            // Determine best selector
+            let selectorText = '';
+            const counts = element.counts || {};
             
+            if (element.attributes?.id && counts.id === 1) {
+                selectorText = `id: #${element.attributes.id}`;
+            } else if (element.attributes?.class && counts.className === 1) {
+                selectorText = `class: .${element.attributes.class.split(' ')[0]}`;
+            } else if (element.selector && !element.selector.startsWith('/') && counts.cssSelector === 1) {
+                selectorText = `css: ${element.selector}`;
+            } else {
+                selectorText = `xpath: ${element.xpath}`;
+            }
+
             return `
                 <div class="element-item">
-                    <div class="element-name">${element.name}</div>
-                    <div class="element-selector">${bestSelector}</div>
+                    <div class="element-icon">
+                        <span class="material-symbols-outlined">ads_click</span>
+                    </div>
+                    <div class="element-content">
+                        <p class="element-name">${element.name}</p>
+                        <p class="element-selector">${selectorText}</p>
+                    </div>
+                    <button class="copy-btn" data-selector="${selectorText}" title="Copy selector">
+                        <span class="material-symbols-outlined">content_copy</span>
+                    </button>
                 </div>
             `;
         }).join('');
+        
+        // Add event listeners to copy buttons
+        setTimeout(() => {
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const selectorText = btn.getAttribute('data-selector');
+                    this.copyElementValue(selectorText, btn);
+                });
+            });
+        }, 100);
     }
 
-    showError(message) {
-        this.statusDiv.className = 'status status-inactive';
-        this.statusDiv.innerHTML = `❌ ${message}`;
+    showModal() {
+        document.getElementById('settingsModal').classList.add('show');
+        
+        // Load and set active language button
+        chrome.storage.local.get(['language'], (result) => {
+            const lang = result.language || 'en';
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(lang === 'en' ? 'langEnBtn' : 'langTrBtn').classList.add('active');
+            
+            // Update modal language
+            this.updateModalLanguage(lang);
+        });
+    }
+
+    hideModal() {
+        document.getElementById('settingsModal').classList.remove('show');
+    }
+
+    updateModalLanguage(lang) {
+        const modalTranslations = {
+            en: {
+                modal_title: 'Element Hunter Settings',
+                developer_about: 'About Developer'
+            },
+            tr: {
+                modal_title: 'Element Hunter Ayarları',
+                developer_about: 'Geliştirici Hakkında'
+            }
+        };
+
+        const t = modalTranslations[lang];
+        
+        // Update modal title
+        const modalTitle = document.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = t.modal_title;
+        }
+        
+        // Update section titles
+        const sectionTitles = document.querySelectorAll('.section-title');
+        if (sectionTitles.length > 0) {
+            sectionTitles[0].textContent = t.developer_about;
+        }
+        if (sectionTitles.length > 1) {
+            sectionTitles[1].textContent = 'Dil / Language';
+        }
+    }
+
+    copyElementValue(selectorText, buttonElement) {
+        console.log('Copying:', selectorText);
+        
+        // Show success feedback immediately
+        const icon = buttonElement.querySelector('.material-symbols-outlined');
+        const originalIcon = icon.textContent;
+        
+        // Try modern clipboard API first
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(selectorText).then(() => {
+                console.log('Copied successfully with clipboard API');
+                icon.textContent = 'check';
+                buttonElement.classList.add('copied');
+                
+                setTimeout(() => {
+                    icon.textContent = originalIcon;
+                    buttonElement.classList.remove('copied');
+                }, 1500);
+            }).catch(err => {
+                console.error('Clipboard API failed:', err);
+                this.fallbackCopy(selectorText, icon, originalIcon, buttonElement);
+            });
+        } else {
+            // Use fallback method
+            this.fallbackCopy(selectorText, icon, originalIcon, buttonElement);
+        }
+    }
+
+    fallbackCopy(selectorText, icon, originalIcon, buttonElement) {
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = selectorText;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            if (successful) {
+                console.log('Copied successfully with fallback method');
+                icon.textContent = 'check';
+                buttonElement.classList.add('copied');
+                
+                setTimeout(() => {
+                    icon.textContent = originalIcon;
+                    buttonElement.classList.remove('copied');
+                }, 1500);
+            } else {
+                console.error('Fallback copy failed');
+            }
+        } catch (err) {
+            console.error('All copy methods failed:', err);
+        }
     }
 }
 
+// Global reference for onclick handlers
+let popupController;
+
 // Popup yüklendiğinde başlat
 document.addEventListener('DOMContentLoaded', () => {
-    new PopupController();
+    popupController = new PopupController();
 });

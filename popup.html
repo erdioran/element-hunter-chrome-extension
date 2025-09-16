@@ -2,195 +2,187 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <style>
         body {
             width: 320px;
-            padding: 12px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: #334155;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #111618;
+            color: white;
+        }
+
+        .container {
+            background: #1A1D1F;
+            min-height: 100vh;
         }
         
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
-            margin: -16px -16px 16px -16px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #2F3335;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 8px;
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
+            width: 24px;
+            height: 24px;
+            color: #13a4ec;
         }
 
         h1 {
             margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            text-align: center;
-            flex: 1;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.015em;
         }
 
         .settings-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-            color: #64748b;
-        }
-
-        .settings-btn:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-        
-        .status {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .status-active {
-            background: #f0fdf4;
-            border-color: #10b981;
-            color: #065f46;
-        }
-
-        .status-inactive {
-            background: #fef2f2;
-            border-color: #ef4444;
-            color: #991b1b;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .controls button {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .toggle-btn, .clear-btn {
-            flex: 0.8;
-            height: 40px;
-        }
-
-        .mode-btn {
-            flex: 1.4;
-            line-height: 1.1;
-            padding: 6px 8px;
-            font-size: 11px;
-            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 10px 14px;
+            width: 32px;
+            height: 32px;
+            background: #2F3335;
             border: none;
-            border-radius: 8px;
-            font-weight: 500;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 12px;
             color: white;
+            transition: background-color 0.2s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #059669, #047857);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-download {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-
-        .btn-download:hover {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-selenium {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-
-        .btn-selenium:hover {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        .settings-btn:hover {
+            background: #3f4448;
         }
         
-        .stats {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #475569;
-        }
-        
-        .stats h3 {
-            margin: 0 0 10px 0;
-            color: #333;
-        }
-        
-        .elements-section {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-
-        .elements-section h3 {
-            margin: 0 0 8px 0;
+        .status {
+            background: #2F3335;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 16px;
+            text-align: center;
             font-size: 14px;
-            color: #1e293b;
+            color: #9BA3A6;
+        }
+
+        .status.active {
+            color: #9BA3A6;
+        }
+
+        .status-text {
+            color: #10b981;
             font-weight: 600;
         }
 
+        .status-text.inactive {
+            color: #dc2626;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px;
+        }
+
+        .controls .full-width {
+            grid-column: span 2;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.015em;
+        }
+
+        .btn-start {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: #059669;
+        }
+
+        .btn-stop {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background: #b91c1c;
+        }
+
+        .btn-mode {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-mode:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-clear {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #b45309;
+        }
+
+        .btn-download {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #6d28d9;
+        }
+
+        .btn-selenium {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-selenium:hover {
+            background: #4338ca;
+        }
+        
+        .elements-section {
+            margin: 24px 16px 0 16px;
+        }
+
+        .elements-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: white;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+        }
+
         .elements-list {
-            max-height: 120px;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .mode-toggle {
@@ -210,24 +202,85 @@
         }
 
         .element-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #2F3335;
             border-radius: 6px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .element-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #1A1D1F;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .element-icon .material-symbols-outlined {
+            font-size: 18px;
+            color: #9BA3A6;
+        }
+
+        .element-content {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 10px;
+            height: 10px;
+            background: #4a5568;
+            border: none;
+            border-radius: 1px;
+            color: #a0aec0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            transition: all 0.2s;
+            opacity: 0.7;
+        }
+
+        .copy-btn:hover {
+            background: #13a4ec;
+            color: white;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+            color: white;
         }
 
         .element-name {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 11px;
-            margin-bottom: 4px;
+            font-weight: 500;
+            color: white;
+            font-size: 12px;
+            margin: 0 0 2px 0;
+            line-height: 1.2;
         }
 
         .element-selector {
             font-size: 10px;
-            color: #64748b;
+            color: #9BA3A6;
             font-family: 'Courier New', monospace;
+            margin: 0;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
         }
         
         .element-text {
@@ -244,56 +297,107 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 12px;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
+            background: #2d3748;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 350px;
+            max-width: 90vw;
+            padding: 24px;
+            animation: modalEnter 0.3s ease-out;
+        }
+
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #edf2f7;
+            margin: 0;
         }
 
         .close {
-            color: #aaa;
-            float: right;
-            font-size: 24px;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: #a0aec0;
             cursor: pointer;
-            line-height: 1;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
 
         .close:hover {
-            color: #000;
+            color: #edf2f7;
+            background: #4a5568;
         }
 
-        .about-section, .feedback-section {
-            margin-bottom: 16px;
+        .modal-section {
+            margin-bottom: 24px;
         }
 
-        .about-section h3, .feedback-section h3 {
-            margin: 0 0 12px 0;
+        .section-title {
             font-size: 16px;
-            color: #1e293b;
             font-weight: 600;
+            color: #edf2f7;
+            margin: 0 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #4a5568;
         }
 
-        .developer-info p {
-            margin: 6px 0;
-            font-size: 13px;
-            color: #475569;
+        .developer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .developer-info a {
-            color: #3b82f6;
-            text-decoration: none;
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .developer-info a:hover {
+        .info-icon {
+            font-size: 20px;
+            color: #a0aec0;
+        }
+
+        .info-text {
+            color: #edf2f7;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .info-link {
+            color: #a0aec0;
             text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .info-link:hover {
+            color: #13a4ec;
         }
 
         #feedbackText {
@@ -309,38 +413,31 @@
             box-sizing: border-box;
         }
 
-        .language-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
         .language-buttons {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 12px;
         }
 
         .lang-btn {
             flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
+            padding: 10px 14px;
+            border: none;
             border-radius: 6px;
-            background: white;
-            color: #374151;
+            background: #3a475a;
+            color: white;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: 600;
             transition: all 0.2s;
         }
 
-        .lang-btn.active {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-color: #2563eb;
+        .lang-btn:hover {
+            transform: translateY(-2px);
         }
 
-        .lang-btn:hover:not(.active) {
-            background: #f3f4f6;
+        .lang-btn.active {
+            background: #13a4ec !important;
+            box-shadow: 0 4px 14px 0 rgba(19, 164, 236, 0.39);
         }
 
         .toggle-btn {
@@ -452,77 +549,118 @@
         }
 
         .instructions {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #0369a1;
+            text-align: center;
+            font-size: 12px;
+            color: #9BA3A6;
+            margin: 24px 16px 16px 16px;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            <img src="icons/icon-32.png" alt="Element Hunter" class="logo">
-            <h1>Element Hunter</h1>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <img src="icons/icon-32.png" alt="Element Hunter" class="logo">
+                <h1>Element Hunter</h1>
+            </div>
+            <button class="settings-btn" id="settingsBtn">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
         </div>
-        <button class="settings-btn" id="settingsBtn">?</button>
-    </div>
-    
-    <div id="status" class="status inactive">
-        ⏹️ Inactive - Click to start
-    </div>
-    
-    <div class="controls">
-        <button id="toggleBtn" class="toggle-btn">Start</button>
-        <button id="modeBtn" class="mode-btn">Mod:<br>Sadece Yakala</button>
-        <button id="clearBtn" class="clear-btn">Clear</button>
-    </div>
-    
-    <div class="download-controls">
-        <button id="downloadBtn" class="download-btn">Download JSON</button>
-        <button id="seleniumBtn" class="selenium-btn">Selenium Automation Format</button>
-    </div>
-    
-    <div class="stats">
-        📊 Statistics: Collected Elements <span id="elementCount">0</span>
-    </div>
-    
-    <div class="elements-section">
-        <h3>📋 Recent Captured Elements</h3>
-        <div class="elements-list" id="elementsList">
-            <div style="text-align: center; color: #64748b; padding: 16px; font-size: 12px;">
-                No elements captured yet
+        
+        <div id="status" class="status">
+            Status: <span class="status-text" id="statusText">Pasif</span>
+        </div>
+        
+        <div class="controls">
+            <button id="toggleBtn" class="btn btn-start">Start</button>
+            <button id="modeBtn" class="btn btn-mode">Mode: Auto</button>
+            <button id="clearBtn" class="btn btn-clear full-width">Clear</button>
+            <button id="downloadBtn" class="btn btn-download">Download JSON</button>
+            <button id="seleniumBtn" class="btn btn-selenium">Selenium Automation Format</button>
+        </div>
+        
+        <div class="elements-section">
+            <h3>Collected Elements (<span id="elementCount">3</span>)</h3>
+            <div class="elements-list" id="elementsList">
+                <div class="element-item">
+                    <div class="element-icon">
+                        <span class="material-symbols-outlined">ads_click</span>
+                    </div>
+                    <div class="element-content">
+                        <p class="element-name">Username</p>
+                        <p class="element-selector">css=#username</p>
+                    </div>
+                </div>
+                <div class="element-item">
+                    <div class="element-icon">
+                        <span class="material-symbols-outlined">ads_click</span>
+                    </div>
+                    <div class="element-content">
+                        <p class="element-name">Password</p>
+                        <p class="element-selector">xpath=//input[@id='password']</p>
+                    </div>
+                </div>
+                <div class="element-item">
+                    <div class="element-icon">
+                        <span class="material-symbols-outlined">ads_click</span>
+                    </div>
+                    <div class="element-content">
+                        <p class="element-name">Login</p>
+                        <p class="element-selector">css=.btn-primary</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="instructions">
-        💡 Click on webpage elements to capture them. Captured elements are automatically saved in JSON format.
+        
+        <p class="instructions">
+            Start on a webpage to begin collecting elements.
+        </p>
     </div>
 
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h1 class="modal-title">Element Hunter Ayarları</h1>
+                <button class="close" id="closeModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
             
-            <div class="about-section">
-                <h3>About Developer</h3>
+            <div class="modal-section">
+                <h2 class="section-title">Geliştirici Hakkında</h2>
                 <div class="developer-info">
-                    <p><strong>Erdi Oran</strong></p>
-                    <p>📧 <a href="mailto:erdioran@gmail.com">erdioran@gmail.com</a></p>
-                    <p>🔗 <a href="https://github.com/erdioran" target="_blank">github.com/erdioran</a></p>
+                    <div class="info-item">
+                        <span class="material-symbols-outlined info-icon">person</span>
+                        <p class="info-text">Erdi Oran</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="material-symbols-outlined info-icon">email</span>
+                        <a class="info-link" href="mailto:erdi.oran@example.com">erdi.oran@example.com</a>
+                    </div>
+                    <div class="info-item">
+                        <svg class="info-icon" style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                            <path clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.168 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.378.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" fill-rule="evenodd"></path>
+                        </svg>
+                        <a class="info-link" href="https://github.com/erdioran" target="_blank" rel="noopener noreferrer">github.com/erdioran</a>
+                    </div>
                 </div>
             </div>
-
-            <div class="language-section">
-                <h3>🌐 Language / Dil</h3>
+            
+            <div class="modal-section">
+                <h2 class="section-title">Dil / Language</h2>
                 <div class="language-buttons">
-                    <button id="langEnBtn" class="lang-btn active">English</button>
-                    <button id="langTrBtn" class="lang-btn">Türkçe</button>
+                    <button id="langEnBtn" class="lang-btn">
+                        <span>English</span>
+                    </button>
+                    <button id="langTrBtn" class="lang-btn">
+                        <span>Türkçe</span>
+                    </button>
                 </div>
             </div>
+            
         </div>
     </div>
 
