@@ -31,10 +31,12 @@ A modern Chrome extension for automatically capturing web element information fo
 - **Instant Feedback**: Visual confirmation for copy operations
 
 ### ⚙️ Advanced Features
+- **Dual Interface Modes**: Popup and Side Panel interface options
 - **DevTools Integration**: Optional DevTools panel mode
 - **Persistent Settings**: Language preferences saved automatically
 - **Element Management**: Clear, add, and manage captured elements
 - **Status Indicators**: Dynamic active/inactive status display
+- **Centered UI Elements**: Professional alignment for developer information
 
 ## 🚀 Installation
 
@@ -51,11 +53,14 @@ A modern Chrome extension for automatically capturing web element information fo
 
 ### Basic Usage
 1. Click the Element Hunter icon in your Chrome toolbar
-2. Click "Start" (or "Başlat" in Turkish) to begin capture mode
-3. Navigate to your target webpage
-4. Click on elements you want to capture
-5. View captured elements in the popup with copy buttons
-6. Export as JSON or Selenium format when ready
+2. Choose your preferred interface:
+   - **Popup Mode**: Traditional popup window interface
+   - **Side Panel Mode**: Dedicated side panel for better workspace
+3. Click "Start" (or "Başlat" in Turkish) to begin capture mode
+4. Navigate to your target webpage
+5. Click on elements you want to capture
+6. View captured elements in the interface with copy buttons
+7. Export as JSON or Selenium format when ready
 
 ### Copy Element Selectors
 - Each captured element has a small copy icon in the top-right corner
@@ -211,7 +216,8 @@ for (String elementName : elements.keySet()) {
 - **Manifest V3**: Modern Chrome extension architecture
 - **Content Script**: DOM interaction and element capture logic
 - **Background Service Worker**: Extension lifecycle management
-- **Popup Interface**: User controls and element management
+- **Dual Interface System**: Both popup and side panel interfaces
+- **Side Panel Integration**: Chrome's native side panel API support
 - **Chrome Storage API**: Persistent data storage
 
 ### Selector Priority Algorithm
@@ -249,6 +255,8 @@ This project is open source and available under the MIT License.
 - **📄 Simplified JSON Format**: Removed metadata wrapper from Selenium export
 - **🌐 Real URL Detection**: Shows actual website URLs instead of extension URLs
 - **⚙️ Smart Element Filtering**: Priority-based selection (IMG > clickable > important elements)
+- **📱 Side Panel Interface**: Native Chrome side panel support for better workspace integration
+- **🎨 UI Improvements**: Centered alignment for developer information titles
 
 ### v2.0.0
 - **Major UI/UX Redesign**: Modern pastel theme with 320px compact popup
@@ -271,13 +279,20 @@ This project is open source and available under the MIT License.
 ## 🎨 UI Screenshots
 
 ### Main Interface
+- **Dual Interface Options**: Choose between popup and side panel modes
 - **Compact Design**: 320px width with optimized spacing
 - **Professional Theme**: Gradient buttons with pastel colors
 - **Smart Layout**: Logo + title + settings in header
 - **Responsive Controls**: Equal-width buttons with proper alignment
 
+### Side Panel Interface
+- **Native Integration**: Chrome's built-in side panel API
+- **Better Workspace**: Dedicated panel for element capture workflow
+- **Consistent Design**: Matches popup interface styling
+- **Enhanced Productivity**: No popup window management needed
+
 ### Settings Modal
-- **About Developer**: Contact information and links
+- **About Developer**: Contact information and links with centered alignment
 - **Language Selection**: English/Turkish toggle buttons
 - **Clean Design**: Modal overlay with rounded corners
 
@@ -312,6 +327,8 @@ Please use the GitHub Issues page to report bugs or request new features.
 - ✅ **Simplified JSON Export**: Cleaner Selenium automation format
 - ✅ **Real URL Detection**: Shows actual website URLs in exports
 - ✅ **Enhanced Element Filtering**: Priority-based element selection
+- ✅ **Side Panel Interface**: Native Chrome side panel support for better workflow
+- ✅ **UI Improvements**: Centered developer information titles for professional appearance
 
 ### Previous (v2.0.0)
 - ✅ Complete UI overhaul with modern design
