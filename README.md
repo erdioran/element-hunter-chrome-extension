@@ -6,19 +6,18 @@ A modern Chrome extension for automatically capturing web element information fo
 
 ## 🎬 Demo
 
-![Element Hunter Demo](https://your-gif-url-here.gif)
-
-![Element Hunter Demo](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDEwY3J0OGJlcXNkZzU1N2t1Y2Q3a2k5a2VnOGs4cmp1ZHJiNWt3YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lpVWL3B002F9cuoOKW/giphy.gif)
+![Element Hunter Demo](https://i.imgur.com/9rZHpTU.gif)
 
 ## ✨ Features
 
-### 🎯 Core Functionality
+### 🎆 Core Functionality
 - **Smart Element Detection**: Automatically captures clicked elements with intelligent selector priority
-- **Multiple Selector Types**: Supports ID, name, className, CSS selectors, and XPath
+- **Advanced Target Detection**: Handles overlapping elements and finds the most relevant target
+- **Intelligent Element Naming**: English naming with Turkish translation and context awareness
+- **Multiple Selector Types**: Supports ID, name, className, CSS selectors, and optimized XPath
 - **Visual Feedback**: Real-time hover effects and click confirmations
-- **Dual Export Formats**: Standard JSON and Selenium automation-ready JSON export
-- **Element Naming**: Automatic element naming based on content and attributes
-- **Persistent Storage**: Elements are saved across browser sessions
+- **Dual Export Formats**: Standard JSON and simplified Selenium automation JSON export
+- **Persistent Storage**: Elements are saved across browser sessions with real site URLs
 
 ### 🌐 Multilingual Support
 - **Language Switching**: Toggle between English and Turkish
@@ -27,7 +26,8 @@ A modern Chrome extension for automatically capturing web element information fo
 
 ### 📋 Copy & Export Functionality
 - **One-Click Copy**: Copy element selectors with compact copy buttons
-- **Multiple Export Formats**: Standard JSON and Selenium automation format
+- **Multiple Export Formats**: Standard JSON and simplified Selenium automation format
+- **Smart URL Detection**: Real website URLs instead of extension URLs
 - **Instant Feedback**: Visual confirmation for copy operations
 
 ### ⚙️ Advanced Features
@@ -72,9 +72,16 @@ A modern Chrome extension for automatically capturing web element information fo
 The extension uses intelligent selector priority for maximum reliability:
 
 1. **ID** - If element has a unique ID (`id: #unique-id`)
-2. **Class Name** - If element has a unique class (`class: .unique-class`)
-3. **CSS Selector** - Generated CSS selector (`css: div.container > button`)
-4. **XPath** - Fallback XPath selector (`xpath: //div[@class='container']/button`)
+2. **Name** - If element has a unique name attribute (`name: "username"`)
+3. **IMG Special Handling** - Optimized selectors for product images with index-based XPath
+4. **Class Name** - If element has a unique class (`class: .unique-class`)
+5. **Data Attributes** - Custom data attributes (`data-testid: "login-btn"`)
+6. **XPath** - Fallback XPath selector with smart positioning
+
+### 🎯 Advanced Target Detection
+- **Overlay Handling**: Automatically detects and bypasses overlay elements
+- **Element Priority**: IMG > Clickable elements > Important product elements
+- **Context Awareness**: Detects navbar, product cards, and other UI contexts
 
 ## 📊 Export Formats
 
@@ -85,7 +92,7 @@ The extension uses intelligent selector priority for maximum reliability:
     "generatedAt": "2024-01-15T10:30:00.000Z",
     "url": "https://example.com",
     "totalElements": 2,
-    "tool": "Element Hunter v1.0"
+    "tool": "Element Hunter v2.1.0"
   },
   "elements": [
     {
@@ -116,24 +123,24 @@ The extension uses intelligent selector priority for maximum reliability:
 }
 ```
 
-### Selenium Automation Format
+### Selenium Automation Format (Simplified)
 ```json
 {
-  "metadata": {
-    "generatedAt": "2024-01-15T10:30:00.000Z",
-    "url": "https://example.com",
-    "totalElements": 2,
-    "tool": "Element Hunter v1.0"
+  "LOGIN_BTN_BUTTON": {
+    "value": "login-btn",
+    "type": "id"
   },
-  "elements": {
-    "LOGIN_BUTTON": {
-      "value": "login-btn",
-      "type": "id"
-    },
-    "SEARCH_INPUT": {
-      "value": "search-field",
-      "type": "className"
-    }
+  "CUSTOMER_EMAIL_INPUT": {
+    "value": "customerEmail",
+    "type": "id"
+  },
+  "NAVBAR_MEN_LINK": {
+    "value": "/html/body/nav/ul/li[2]/a",
+    "type": "xpath"
+  },
+  "PRODUCT_CARD_IMG_7": {
+    "value": "(//img[contains(@class,'m-productCard__img')])[7]",
+    "type": "xpath"
   }
 }
 ```
@@ -147,13 +154,12 @@ from selenium.webdriver.common.by import By
 import json
 
 # Load Selenium Automation format
-with open('selenium_elements.json', 'r') as f:
-    data = json.load(f)
+with open('selenium_automation.json', 'r') as f:
+    elements = json.load(f)  # Direct element dictionary
 
 driver = webdriver.Chrome()
 
 # Use captured elements with automatic selector type handling
-elements = data['elements']
 for element_name, element_data in elements.items():
     selector_type = element_data['type']
     selector_value = element_data['value']
@@ -177,10 +183,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-// Load and parse JSON
+// Load and parse JSON (direct elements object)
 Gson gson = new Gson();
-JsonObject data = gson.fromJson(jsonString, JsonObject.class);
-JsonObject elements = data.getAsJsonObject("elements");
+JsonObject elements = gson.fromJson(jsonString, JsonObject.class);
 
 WebDriver driver = new ChromeDriver();
 
@@ -235,7 +240,17 @@ This project is open source and available under the MIT License.
 
 ## 🔄 Version History
 
-### v2.0.0 (Current)
+### v2.1.0 (Current)
+- **🎯 Enhanced Element Naming**: Smart English naming with Turkish translation
+- **🔄 CamelCase Word Separation**: `customerEmail` → `CUSTOMER_EMAIL_INPUT`
+- **🏢 Context-Aware Naming**: CSS class context detection (`navbar` → `NAVBAR_MEN_LINK`)
+- **🎯 Advanced Target Detection**: Handles overlapping elements and finds actual targets
+- **🖼️ IMG Element Optimization**: Specialized selectors for product images with index-based XPath
+- **📄 Simplified JSON Format**: Removed metadata wrapper from Selenium export
+- **🌐 Real URL Detection**: Shows actual website URLs instead of extension URLs
+- **⚙️ Smart Element Filtering**: Priority-based selection (IMG > clickable > important elements)
+
+### v2.0.0
 - **Major UI/UX Redesign**: Modern pastel theme with 320px compact popup
 - **Multilingual Support**: English/Turkish language switching with persistence
 - **Enhanced Button System**: Gradient colors, proper sizing, and hover effects
@@ -290,9 +305,28 @@ Please use the GitHub Issues page to report bugs or request new features.
 
 ## 🚀 Recent Updates
 
+### Latest (v2.1.0)
+- ✅ **Smart Element Naming**: English naming with Turkish translation and context awareness
+- ✅ **Advanced Target Detection**: Handles overlapping elements and overlay filtering
+- ✅ **IMG Element Optimization**: Specialized selectors for product images
+- ✅ **Simplified JSON Export**: Cleaner Selenium automation format
+- ✅ **Real URL Detection**: Shows actual website URLs in exports
+- ✅ **Enhanced Element Filtering**: Priority-based element selection
+
+### Previous (v2.0.0)
 - ✅ Complete UI overhaul with modern design
 - ✅ Multilingual support (EN/TR)
 - ✅ Enhanced element capture display
 - ✅ Fixed button sizing and layout issues
 - ✅ Added settings modal with configuration options
 - ✅ Improved user experience with better visual feedback
+
+## 🎯 Element Naming Examples
+
+| **Input** | **Output** | **Context** |
+|-----------|------------|-------------|
+| `loginBtn` | `LOGIN_BTN_BUTTON` | CamelCase separation |
+| `customerEmail` | `CUSTOMER_EMAIL_INPUT` | Word boundary detection |
+| `ERKEK` (Turkish) | `NAVBAR_MEN_LINK` | Translation + context |
+| Product image | `PRODUCT_CARD_IMG_7` | Index-based naming |
+| `hesabım` (Turkish) | `MY_ACCOUNT_BUTTON` | Turkish → English translation |
