@@ -117,8 +117,10 @@ class ElementHunter {
     }
 
     handleClick(event) {
-        const element = event.target;
-        const elementInfo = this.extractElementInfo(element);
+        // Gerçek hedef elementi bul - overlay elementlerini atla
+        let targetElement = this.findActualTarget(event);
+        
+        const elementInfo = this.extractElementInfo(targetElement);
         
         // Element zaten var mı kontrol et
         const exists = this.elements.some(el => 
@@ -132,7 +134,7 @@ class ElementHunter {
             this.updateOverlay();
             
             // Visual feedback
-            this.showClickFeedback(element);
+            this.showClickFeedback(targetElement);
             
             console.log('Element Hunter - Yeni element eklendi:', elementInfo);
         }
@@ -143,6 +145,82 @@ class ElementHunter {
             event.stopPropagation();
         }
         // captureAndClick true ise, normal tıklama işlemi devam eder
+    }
+    
+    // Gerçek hedef elementi bulma fonksiyonu
+    findActualTarget(event) {
+        const clickX = event.clientX;
+        const clickY = event.clientY;
+        
+        // Tıklanan noktadaki tüm elementleri al
+        const elementsAtPoint = document.elementsFromPoint(clickX, clickY);
+        
+        // Overlay ve kendi elementlerimizi filtrele
+        const filteredElements = elementsAtPoint.filter(el => {
+            return el.id !== 'element-hunter-overlay' && 
+                   !el.closest('#element-hunter-overlay') &&
+                   el.tagName.toLowerCase() !== 'html' &&
+                   el.tagName.toLowerCase() !== 'body';
+        });
+        
+        // En spesifik elementi bul
+        for (const element of filteredElements) {
+            // IMG elementi varsa öncelik ver
+            if (element.tagName.toLowerCase() === 'img') {
+                return element;
+            }
+            
+            // Clickable elementlere öncelik ver
+            if (this.isClickableElement(element)) {
+                return element;
+            }
+            
+            // Product card içindeki önemli elementlere öncelik ver
+            if (this.isImportantProductElement(element)) {
+                return element;
+            }
+        }
+        
+        // Hiçbiri yoksa ilk elementi döndür
+        return filteredElements[0] || event.target;
+    }
+    
+    // Tıklanabilir element kontrolü
+    isClickableElement(element) {
+        const clickableTags = ['a', 'button', 'input', 'select', 'textarea'];
+        const tagName = element.tagName.toLowerCase();
+        
+        if (clickableTags.includes(tagName)) {
+            return true;
+        }
+        
+        // Click event listener'ı olan elementler
+        if (element.onclick || element.getAttribute('onclick')) {
+            return true;
+        }
+        
+        // Role="button" olan elementler
+        if (element.getAttribute('role') === 'button') {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // Ürün kartındaki önemli element kontrolü
+    isImportantProductElement(element) {
+        const className = element.className || '';
+        const importantClasses = [
+            'productCard__img',
+            'productCard__title',
+            'productCard__desc',
+            'productCard__price',
+            'product-image',
+            'product-title',
+            'product-link'
+        ];
+        
+        return importantClasses.some(cls => className.includes(cls));
     }
 
     handleMouseOver(event) {
@@ -210,7 +288,7 @@ class ElementHunter {
     }
 
     getBestSelector(element) {
-        // Öncelik sırası: id > name > className > data-* > xpath
+        // Öncelik sırası: id > name > className > data-* > optimized xpath
         
         // 1. ID varsa kullan
         if (element.id) {
@@ -222,7 +300,12 @@ class ElementHunter {
             return `[name="${element.name}"]`;
         }
         
-        // 3. Class varsa kullan (tek class tercih et)
+        // 3. IMG elementi için özel selector
+        if (element.tagName.toLowerCase() === 'img') {
+            return this.getImageSelector(element);
+        }
+        
+        // 4. Class varsa kullan (tek class tercih et)
         if (element.className && typeof element.className === 'string') {
             const classes = element.className.trim().split(/\s+/);
             if (classes.length > 0 && classes[0]) {
@@ -230,7 +313,7 @@ class ElementHunter {
             }
         }
         
-        // 4. Data attribute varsa kullan
+        // 5. Data attribute varsa kullan
         const dataAttrs = Array.from(element.attributes).filter(attr => 
             attr.name.startsWith('data-')
         );
@@ -238,7 +321,32 @@ class ElementHunter {
             return `[${dataAttrs[0].name}="${dataAttrs[0].value}"]`;
         }
         
-        // 5. Son çare olarak XPath kullan
+        // 6. Son çare olarak XPath kullan
+        return this.getXPath(element);
+    }
+    
+    // IMG elementleri için özel selector
+    getImageSelector(element) {
+        const className = element.className || '';
+        
+        // Ürün kartı resmi için özel selector
+        if (className.includes('productCard__img') || className.includes('m-productCard__img')) {
+            // Aynı class'a sahip kaçıncı element olduğunu bul
+            const similarImages = document.querySelectorAll(`img.${className.split(' ').join('.')}`);
+            const index = Array.from(similarImages).indexOf(element) + 1;
+            
+            if (index > 0) {
+                return `(//img[contains(@class,'${className.split(' ')[0]}')])[${index}]`;
+            }
+        }
+        
+        // Genel img selector
+        if (className) {
+            const mainClass = className.split(' ')[0];
+            return `img.${mainClass}`;
+        }
+        
+        // Class yoksa XPath kullan
         return this.getXPath(element);
     }
 
@@ -321,34 +429,225 @@ class ElementHunter {
 
     generateElementName(element) {
         let name = '';
+        const tagName = element.tagName.toLowerCase();
+        
+        // Context bilgisini class'tan al
+        const context = this.getContextFromClassName(element);
         
         // 1. ID varsa kullan
         if (element.id) {
-            name = element.id.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
+            let idName = element.id.replace(/[^a-zA-Z0-9]/g, '_');
+            idName = this.addUnderscoreBetweenWords(idName);
+            name = this.translateToEnglish(idName);
         }
         // 2. Name attribute varsa kullan
         else if (element.name) {
-            name = element.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
+            let nameName = element.name.replace(/[^a-zA-Z0-9]/g, '_');
+            nameName = this.addUnderscoreBetweenWords(nameName);
+            name = this.translateToEnglish(nameName);
         }
-        // 3. Text içeriği varsa kullan
+        // 3. Text içeriği varsa kullan ve İngilizce'ye çevir
         else if (this.getElementText(element)) {
-            const text = this.getElementText(element)
-                .replace(/[^a-zA-Z0-9\s]/g, '')
+            let text = this.getElementText(element)
+                .replace(/[^a-zA-Z0-9\s\u00C0-\u017F\u0100-\u024F]/g, '') // Turkish characters dahil
                 .trim()
-                .replace(/\s+/g, '_')
-                .toUpperCase();
+                .replace(/\s+/g, '_');
+            
+            // Türkçe karakterleri İngilizce'ye çevir ve anlamlı isim oluştur
+            text = this.translateToEnglish(text);
+            text = this.addUnderscoreBetweenWords(text);
             name = text.substring(0, 20);
         }
         // 4. Tag name + counter kullan
         else {
-            name = `${element.tagName.toUpperCase()}_${this.elementCounter}`;
+            name = `${tagName.toUpperCase()}_${this.elementCounter}`;
         }
         
-        // Benzersizlik için counter ekle
-        const finalName = `${name}_ELEMENT`;
+        // Element tipine göre suffix ekle
+        let suffix = '';
+        if (tagName === 'button' || (tagName === 'input' && element.type === 'button') || (tagName === 'input' && element.type === 'submit')) {
+            suffix = '_BUTTON';
+        } else if (tagName === 'input') {
+            suffix = '_INPUT';
+        } else if (tagName === 'a') {
+            suffix = '_LINK';
+        } else if (tagName === 'img') {
+            suffix = '_IMAGE';
+        } else if (tagName === 'select') {
+            suffix = '_SELECT';
+        } else if (tagName === 'textarea') {
+            suffix = '_TEXTAREA';
+        } else if (this.isListItem(element)) {
+            const index = this.getListItemIndex(element);
+            suffix = `_LIST_${index}`;
+        } else {
+            suffix = '_ELEMENT';
+        }
+        
+        // Context varsa başa ekle
+        let finalName = '';
+        if (context && !name.includes(context)) {
+            finalName = `${context}_${name}${suffix}`;
+        } else {
+            finalName = `${name}${suffix}`;
+        }
+        
+        // Çift _ karakterlerini temizle
+        finalName = finalName.replace(/_+/g, '_');
+        
+        // Başta ve sonda _ varsa kaldır
+        finalName = finalName.replace(/^_+|_+$/g, '');
+        
         this.elementCounter++;
         
         return finalName;
+    }
+    
+    translateToEnglish(text) {
+        // Türkçe karakterleri İngilizce'ye çevir
+        const turkishToEnglish = {
+            'Ç': 'C', 'ç': 'c',
+            'Ğ': 'G', 'ğ': 'g', 
+            'İ': 'I', 'ı': 'i',
+            'Ö': 'O', 'ö': 'o',
+            'Ş': 'S', 'ş': 's',
+            'Ü': 'U', 'ü': 'u'
+        };
+        
+        // Yaygın Türkçe kelimeleri İngilizce'ye çevir
+        const commonTranslations = {
+            'HESABIM': 'MY_ACCOUNT',
+            'HESAP': 'ACCOUNT',
+            'GIRIS': 'LOGIN',
+            'CIKIS': 'LOGOUT',
+            'KAYIT': 'REGISTER',
+            'SEPET': 'CART',
+            'SEPETIM': 'MY_CART',
+            'URUN': 'PRODUCT',
+            'URUNLER': 'PRODUCTS',
+            'KATEGORI': 'CATEGORY',
+            'KATEGORILER': 'CATEGORIES',
+            'ARAMA': 'SEARCH',
+            'ARA': 'SEARCH',
+            'FILTRE': 'FILTER',
+            'SIRALA': 'SORT',
+            'SIRALAMA': 'SORTING',
+            'FIYAT': 'PRICE',
+            'INDIRIM': 'DISCOUNT',
+            'KAMPANYA': 'CAMPAIGN',
+            'YENI': 'NEW',
+            'POPULER': 'POPULAR',
+            'COKSATAN': 'BESTSELLER',
+            'FAVORI': 'FAVORITE',
+            'FAVORILER': 'FAVORITES',
+            'LISTE': 'LIST',
+            'LISTELE': 'LIST',
+            'DETAY': 'DETAIL',
+            'BILGI': 'INFO',
+            'ILETISIM': 'CONTACT',
+            'HAKKIMIZDA': 'ABOUT_US',
+            'YARDIM': 'HELP',
+            'DESTEK': 'SUPPORT',
+            'SSS': 'FAQ',
+            'BLOG': 'BLOG',
+            'HABERLER': 'NEWS',
+            'DUYURULAR': 'ANNOUNCEMENTS',
+            'ERKEK': 'MEN',
+            'KADIN': 'WOMEN',
+            'COCUK': 'KIDS',
+            'BEBEK': 'BABY'
+        };
+        
+        // Önce Türkçe karakterleri değiştir
+        let result = text;
+        for (const [turkish, english] of Object.entries(turkishToEnglish)) {
+            result = result.replace(new RegExp(turkish, 'g'), english);
+        }
+        
+        // Sonra yaygın kelimeleri çevir
+        for (const [turkish, english] of Object.entries(commonTranslations)) {
+            result = result.replace(new RegExp(turkish, 'g'), english);
+        }
+        
+        return result;
+    }
+    
+    // Kelimeler arası _ ekleme fonksiyonu
+    addUnderscoreBetweenWords(text) {
+        // CamelCase'i ayır: customerEmail -> customer_Email
+        let result = text.replace(/([a-z])([A-Z])/g, '$1_$2');
+        
+        // Sayı ve harf arası: btn123 -> btn_123
+        result = result.replace(/([a-zA-Z])([0-9])/g, '$1_$2');
+        result = result.replace(/([0-9])([a-zA-Z])/g, '$1_$2');
+        
+        // Birden fazla _ karakterini tek _ yap
+        result = result.replace(/_+/g, '_');
+        
+        // Başta ve sonda _ varsa kaldır
+        result = result.replace(/^_+|_+$/g, '');
+        
+        return result.toUpperCase();
+    }
+    
+    // Class name'den context bilgisi çıkar
+    getContextFromClassName(element) {
+        const classNames = element.className;
+        if (!classNames || typeof classNames !== 'string') return '';
+        
+        const contextMap = {
+            'navbar': 'NAVBAR',
+            'nav': 'NAV',
+            'header': 'HEADER',
+            'footer': 'FOOTER',
+            'sidebar': 'SIDEBAR',
+            'menu': 'MENU',
+            'dropdown': 'DROPDOWN',
+            'modal': 'MODAL',
+            'popup': 'POPUP',
+            'card': 'CARD',
+            'item': 'ITEM',
+            'list': 'LIST',
+            'grid': 'GRID',
+            'form': 'FORM',
+            'button': 'BTN',
+            'btn': 'BTN',
+            'input': 'INPUT',
+            'search': 'SEARCH',
+            'filter': 'FILTER',
+            'product': 'PRODUCT',
+            'category': 'CATEGORY'
+        };
+        
+        const classes = classNames.toLowerCase().split(/\s+/);
+        
+        for (const cls of classes) {
+            for (const [key, value] of Object.entries(contextMap)) {
+                if (cls.includes(key)) {
+                    return value;
+                }
+            }
+        }
+        
+        return '';
+    }
+    
+    isListItem(element) {
+        // Li elementi veya liste içindeki element kontrolü
+        return element.tagName.toLowerCase() === 'li' || 
+               element.closest('ul, ol, .list, [class*="list"], [class*="item"]') !== null;
+    }
+    
+    getListItemIndex(element) {
+        // Liste içindeki sırasını bul
+        let listContainer = element.closest('ul, ol, .list, [class*="list"]');
+        if (!listContainer) {
+            listContainer = element.parentElement;
+        }
+        
+        const items = Array.from(listContainer.children);
+        const index = items.indexOf(element) + 1;
+        return index > 0 ? index : this.elementCounter;
     }
 
     getElementCounts(element) {
@@ -428,12 +727,21 @@ class ElementHunter {
                     elements: this.elements,
                     elementCounter: this.elementCounter,
                     captureAndClick: this.captureAndClick,
-                    url: window.location.href,
+                    url: this.getBaseUrl(window.location.href),
                     timestamp: Date.now()
                 }
             });
         } catch (error) {
             console.error('Storage kaydetme hatası:', error);
+        }
+    }
+    
+    getBaseUrl(fullUrl) {
+        try {
+            const url = new URL(fullUrl);
+            return `${url.protocol}//${url.hostname}`;
+        } catch (error) {
+            return fullUrl;
         }
     }
 

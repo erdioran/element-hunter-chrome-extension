@@ -2,7 +2,11 @@
 
 ![Element Hunter Logo](icons/icon-128.png)
 
-A powerful Chrome extension for automatically capturing web element information for Selenium automation testing. Element Hunter intelligently identifies and extracts element selectors, making it easy to create robust automation scripts.
+A modern Chrome extension for automatically capturing web element information for Selenium automation testing with an elegant dark-themed UI.
+
+## 🎬 Demo
+
+![Element Hunter Demo](https://your-gif-url-here.gif)
 
 ![Element Hunter Demo](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDEwY3J0OGJlcXNkZzU1N2t1Y2Q3a2k5a2VnOGs4cmp1ZHJiNWt3YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lpVWL3B002F9cuoOKW/giphy.gif)
 
@@ -21,65 +25,60 @@ A powerful Chrome extension for automatically capturing web element information 
 - **Dynamic UI**: All interface elements update instantly
 - **Persistent Preference**: Language choice saved automatically
 
-### 🎨 Modern UI/UX
-- **Compact Design**: 320px width popup with optimized layout
-- **Professional Theme**: Pastel color scheme with gradient buttons
-- **Responsive Controls**: Hover effects and smooth animations
-- **Settings Modal**: Clean modal interface for configuration
-- **Recent Elements**: Shows last 5 captured elements with best selectors
+### 📋 Copy & Export Functionality
+- **One-Click Copy**: Copy element selectors with compact copy buttons
+- **Multiple Export Formats**: Standard JSON and Selenium automation format
+- **Instant Feedback**: Visual confirmation for copy operations
 
-### 🔧 Advanced Features
-- **Capture Modes**: 
-  - Capture Only: Just collect element data
-  - Capture and Click: Collect data and trigger element clicks
-- **Smart Selector Priority**: ID → name → className → CSS → XPath
-- **Element Statistics**: Real-time count of captured elements
-- **Clean Element List**: Simplified display showing element name and best selector
+### ⚙️ Advanced Features
+- **DevTools Integration**: Optional DevTools panel mode
+- **Persistent Settings**: Language preferences saved automatically
+- **Element Management**: Clear, add, and manage captured elements
+- **Status Indicators**: Dynamic active/inactive status display
 
+## 🚀 Installation
 
-## 📦 Installation
-
-1. Download or clone this repository
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/erdioran/element-hunter-chrome-extension.git
+   ```
 2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" in the top right corner
+3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the extension directory
-5. The Element Hunter icon should appear in your Chrome toolbar
+5. The Element Hunter icon will appear in your Chrome toolbar
 
-## 🎯 Usage
+## 📖 Usage
 
-### Basic Operation
-1. **Activate Extension**: Click the Element Hunter icon in Chrome toolbar
-2. **Language Selection**: Click ⚙️ (settings) to choose English or Turkish
-3. **Start Hunting**: Click "Start" button in the popup
-4. **Capture Elements**: Click on any element on the webpage
-5. **View Results**: See last 5 captured elements with their best selectors
-6. **Export Data**: Use "Download JSON" or "Selenium Automation Format" buttons
+### Basic Usage
+1. Click the Element Hunter icon in your Chrome toolbar
+2. Click "Start" (or "Başlat" in Turkish) to begin capture mode
+3. Navigate to your target webpage
+4. Click on elements you want to capture
+5. View captured elements in the popup with copy buttons
+6. Export as JSON or Selenium format when ready
 
-### Interface Overview
-- **Header**: Logo + Element Hunter title + Settings (⚙️)
-- **Status**: Shows current state (Inactive/Active)
-- **Controls**: Start/Stop + Mode + Clear buttons
-- **Downloads**: JSON Export + Selenium Format buttons
-- **Statistics**: Real-time element count
-- **Recent Elements**: Last 5 captures with optimal selectors
+### Copy Element Selectors
+- Each captured element has a small copy icon in the top-right corner
+- Click the copy icon to copy the element's selector (e.g., `class: .header-button`)
+- Visual feedback confirms successful copy operation
 
-### Capture Modes
-- **Mode: Capture Only**: Elements are captured but not clicked (default)
-- **Mode: Capture and Click**: Elements are captured AND their click event is triggered
+### Language Switching
+- Click the settings icon (⚙️) in the popup header
+- Select your preferred language (English/Türkçe)
+- All UI elements update instantly
 
-### Language Support
-- **English**: Full interface in English
-- **Turkish**: Complete Turkish translation
-- **Auto-save**: Language preference persists across sessions
+## 🎯 Element Selector Priority
 
-### Element Information Captured
-- Element name (auto-generated based on content/attributes)
-- Best selector (ID → name → className → CSS → XPath priority)
-- Tag name and text content
-- All available selectors with uniqueness validation
-- Element attributes and counts
+The extension uses intelligent selector priority for maximum reliability:
 
-### Standard Format
+1. **ID** - If element has a unique ID (`id: #unique-id`)
+2. **Class Name** - If element has a unique class (`class: .unique-class`)
+3. **CSS Selector** - Generated CSS selector (`css: div.container > button`)
+4. **XPath** - Fallback XPath selector (`xpath: //div[@class='container']/button`)
+
+## 📊 Export Formats
+
+### Standard JSON Format
 ```json
 {
   "metadata": {

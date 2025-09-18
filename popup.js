@@ -156,77 +156,76 @@ class PopupController {
             return;
         }
 
-        // JSON formatını düzenle - attributes kaldır, className/cssSelector ekle
-        const seleniumFormat = {
-            metadata: {
-                generatedAt: new Date().toISOString(),
-                url: window.location?.href || 'unknown',
-                totalElements: this.elements.length,
-                tool: 'Element Hunter v1.0'
-            },
-            elements: this.elements.map(element => {
-                const counts = element.counts || {};
-                const elementData = {
-                    name: element.name,
-                    selectorType: element.selectorType,
-                    tagName: element.tagName,
-                    text: element.text
-                };
+        // Get current URL from storage or fallback
+        chrome.storage.local.get(['elementHunterData'], (result) => {
+            const currentUrl = result.elementHunterData?.url || window.location.href;
+            
+            // JSON formatını düzenle - attributes kaldır, className/cssSelector ekle
+            const seleniumFormat = {
+                metadata: {
+                    generatedAt: new Date().toISOString(),
+                    url: currentUrl,
+                    totalElements: this.elements.length,
+                    tool: 'Element Hunter v2.0'
+                },
+                elements: this.elements.map(element => {
+                    const counts = element.counts || {};
+                    const elementData = {
+                        name: element.name,
+                        tagName: element.tagName,
+                        text: element.text,
+                        timestamp: element.timestamp
+                    };
+                    
+                    // Selectors objesi oluştur
+                    const selectors = {};
+                    
+                    if (element.attributes?.id) {
+                        selectors.id = `#${element.attributes.id}`;
+                    }
+                    
+                    if (element.attributes?.class) {
+                        const classes = element.attributes.class.split(' ');
+                        selectors.className = `.${classes[0]}`;
+                    }
+                    
+                    if (element.selector && !element.selector.startsWith('/')) {
+                        selectors.cssSelector = element.selector;
+                    }
+                    
+                    if (element.xpath) {
+                        selectors.xpath = element.xpath;
+                    }
+                    
+                    // Counts bilgisi ekle
+                    if (Object.keys(counts).length > 0) {
+                        selectors.counts = counts;
+                    }
+                    
+                    elementData.selectors = selectors;
+                    return elementData;
+                })
+            };
 
-                // Selector'ları ayrı objeler olarak ekle
-                const selectors = [];
-                
-                if (element.selector) {
-                    selectors.push({
-                        cssSelector: element.selector,
-                        counts: counts.cssSelector || 0
-                    });
-                }
-                
-                if (element.attributes?.id) {
-                    selectors.push({
-                        id: element.attributes.id,
-                        counts: counts.id || 0
-                    });
-                }
-                
-                if (element.attributes?.class) {
-                    selectors.push({
-                        className: element.attributes.class,
-                        counts: counts.className || 0
-                    });
-                }
-                
-                if (element.xpath) {
-                    selectors.push({
-                        xpath: element.xpath,
-                        counts: counts.xpath || 0
-                    });
-                }
-                
-                elementData.selectors = selectors;
-                return elementData;
-            })
-        };
-
-        // JSON dosyasını indir
-        const blob = new Blob([JSON.stringify(seleniumFormat, null, 2)], {
-            type: 'application/json'
+            // JSON dosyasını indir
+            const blob = new Blob([JSON.stringify(seleniumFormat, null, 2)], {
+                type: 'application/json'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `elements_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         });
-        
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `elements_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
     }
 
     downloadSeleniumFormat() {
-        // Selenium Otomasyonu formatı
-        const seleniumAutomationFormat = {};
+        // Basit Selenium formatı - sadece elementler
+        const seleniumFormat = {};
         
         this.elements.forEach(element => {
             // Benzersizlik kontrolü ile type belirle: id > className > cssSelector > xpath
@@ -240,7 +239,7 @@ class PopupController {
             }
             // 2. ClassName varsa ve benzersizse kullan
             else if (element.attributes?.class && counts.className === 1) {
-                value = element.attributes.class.split(' ')[0]; // İlk class'ı al
+                value = element.attributes.class.split(' ')[0];
                 type = 'className';
             }
             // 3. CSS Selector benzersizse kullan
@@ -254,21 +253,8 @@ class PopupController {
                 type = 'xpath';
             }
             
-            seleniumAutomationFormat[element.name] = {
-                value: value,
-                type: type
-            };
+            seleniumFormat[element.name] = { value, type };
         });
-
-        const seleniumFormat = {
-            metadata: {
-                generatedAt: new Date().toISOString(),
-                url: window.location?.href || 'unknown',
-                totalElements: this.elements.length,
-                tool: 'Element Hunter v1.0'
-            },
-            elements: seleniumAutomationFormat
-        };
 
         // JSON dosyasını indir
         const blob = new Blob([JSON.stringify(seleniumFormat, null, 2)], {
