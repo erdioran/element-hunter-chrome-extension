@@ -5,7 +5,7 @@ class ElementHunter {
         this.elements = [];
         this.elementCounter = 1;
         this.overlay = null;
-        this.captureAndClick = false; // Yeni mod: element yakala VE tıklama işlemini yap
+        this.captureAndClick = true; // Yeni mod: element yakala VE tıklama işlemini yap
         this.init();
         this.loadFromStorage(); // Sayfa yüklendiğinde storage'dan yükle
     }
@@ -756,7 +756,7 @@ class ElementHunter {
                 if (Date.now() - data.timestamp < oneHour) {
                     this.elements = data.elements || [];
                     this.elementCounter = data.elementCounter || 1;
-                    this.captureAndClick = data.captureAndClick || false;
+                    this.captureAndClick = data.captureAndClick !== undefined ? data.captureAndClick : true;
                     
                     // Aktif durumu geri yükle
                     if (data.isActive) {

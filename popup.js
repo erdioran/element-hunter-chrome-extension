@@ -3,7 +3,7 @@ class PopupController {
     constructor() {
         this.isActive = false;
         this.elements = [];
-        this.captureAndClick = false;
+        this.captureAndClick = true;
         this.init();
     }
 
@@ -17,6 +17,17 @@ class PopupController {
         this.modeBtn = document.getElementById('modeBtn');
         this.elementCount = document.getElementById('elementCount');
         this.elementList = document.getElementById('elementList');
+
+        // Settings modal
+        this.settingsBtn = document.getElementById('settingsBtn');
+        this.settingsModal = document.getElementById('settingsModal');
+        this.modalOverlay = document.getElementById('modalOverlay');
+        this.closeModalBtn = document.getElementById('closeModal');
+        this.languageButtons = document.querySelectorAll('.language-btn');
+        
+        // UI Mode toggle
+        this.uiModeToggle = document.getElementById('uiModeToggle');
+        this.currentUIMode = 'popup';
 
         // Event listeners
         this.toggleBtn.addEventListener('click', () => this.toggleHunting());
@@ -53,8 +64,68 @@ class PopupController {
         });
         this.modeBtn.addEventListener('click', () => this.toggleMode());
 
+        // Language buttons
+        this.languageButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const lang = e.target.dataset.lang;
+                this.switchLanguage(lang);
+                this.hideModal();
+            });
+        });
+        
+        // UI Mode toggle
+        if (this.uiModeToggle) {
+            this.uiModeToggle.addEventListener('click', () => this.toggleUIMode());
+        }
+        
+        // Load UI mode preference
+        this.loadUIMode();
+
         // Başlangıç durumunu yükle
         this.loadCurrentState();
+    }
+
+    async loadUIMode() {
+        try {
+            const result = await chrome.storage.local.get(['uiMode']);
+            this.currentUIMode = result.uiMode || 'popup';
+            this.updateUIModeButton();
+        } catch (error) {
+            console.error('Error loading UI mode:', error);
+        }
+    }
+
+    updateUIModeButton() {
+        if (this.uiModeToggle) {
+            const isPopup = this.currentUIMode === 'popup';
+            this.uiModeToggle.textContent = isPopup ? 'Switch to Side Panel' : 'Switch to Popup';
+            this.uiModeToggle.className = isPopup ? 'ui-mode-btn popup-mode' : 'ui-mode-btn sidepanel-mode';
+        }
+    }
+
+    async toggleUIMode() {
+        try {
+            const newMode = this.currentUIMode === 'popup' ? 'sidepanel' : 'popup';
+            
+            // Send message to background script to update UI mode
+            chrome.runtime.sendMessage({
+                action: 'setUIMode',
+                mode: newMode
+            }, (response) => {
+                if (response && response.status === 'ui_mode_updated') {
+                    this.currentUIMode = newMode;
+                    this.updateUIModeButton();
+                    
+                    // If switching to sidepanel, close popup 
+                    // Side panel will be opened automatically by background script
+                    if (newMode === 'sidepanel') {
+                        window.close();
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error toggling UI mode:', error);
+        }
     }
 
     async loadCurrentState() {
@@ -296,7 +367,7 @@ class PopupController {
                 stop: 'Stop',
                 clear: 'Clear',
                 mode_capture: 'Mode:<br>Capture Only',
-                mode_highlight: 'Mode:<br>Capture & Highlight',
+                mode_highlight: 'Mode:<br>Capture & Click',
                 download_json: 'Download JSON',
                 selenium_format: 'Automation Json',
                 statistics: '📊 Statistics: Collected Elements',
